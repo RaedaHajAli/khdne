@@ -1,8 +1,10 @@
 import 'dart:convert';
-
+import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:khdne/constants.dart';
 
 import 'package:khdne/models/register_model.dart';
 
@@ -25,43 +27,65 @@ class AppController extends GetxController {
     update();
   }
 
+  ImagePicker picker = ImagePicker();
+  File? image;
+  Future<File?> getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      image = File(pickedFile.path);
+      update();
+      return image;
+    } else {
+      print('No image selected');
+
+      return null;
+    }
+  }
+
   RegisterModel? registerModel;
 
   final String baseUrl = 'http://taskflutter.futurecode-projects.com/api/';
-  registerUser(
-      {required String endPoint,
-      required String fullName,
-      required String phoneNumber,
-      required String password,
-      required String passwordConfirmation,
-      }) async {
-    Uri url = Uri.parse('$baseUrl$endPoint');
-    http.Response response = await http.post(url, headers: {
-      'Accept': 'application/json',
-      'Connection': 'keep-alive',
-    }, body: {
+  registerUser({
+    required String endPoint,
+    required String fullName,
+    required String phoneNumber,
+    required String password,
+    required String passwordConfirmation,
+    required File image,
+  }) async {
+    var headers = {'Accept': 'application/json'};
+    var request =
+        http.MultipartRequest('POST', Uri.parse('$baseUrl$kRegisterUrl'));
+    request.fields.addAll({
       'fullname': fullName,
       'phone_number': phoneNumber,
       'password': password,
       'password_confirmation': passwordConfirmation
     });
-    print(response.body);
-    if (response.statusCode == 200) {
+    request.files.add(await http.MultipartFile.fromPath('image', image.path));
+    request.headers.addAll(headers);
+
+    http.StreamedResponse streamedResponse = await request.send();
+
+    if (streamedResponse.statusCode == 200) {
+      var response = await http.Response.fromStream(streamedResponse);
       Map<String, dynamic> data = jsonDecode(response.body);
-      print(data);
+
       registerModel = RegisterModel.fromJson(data);
-      Get.snackbar(' Register Success', 'You have registered successfully');
+      print(registerModel?.userName ?? 'Not found');
       update();
-      if (registerModel != null) {
-        print(registerModel!.message);
-        Get.snackbar('Failed', '${registerModel!.message}');
-      }
-    } else if (response.statusCode == 422) {
+      Get.snackbar(' Register Success', 'You have registered successfully');
+    } else if (streamedResponse.statusCode == 422) {
+      var response = await http.Response.fromStream(streamedResponse);
       Map<String, dynamic> failureData = jsonDecode(response.body);
+     
+
       failure = RegisterFailure.fromJson(failureData);
       Get.snackbar('Failed', '${failure!.message}');
-    }else {
-      Get.snackbar('Failed', 'error with satus code: ${response.statusCode}');
+    } else {
+      print(streamedResponse.reasonPhrase);
+      Get.snackbar(
+          'Failed', 'error with satus code: ${streamedResponse.statusCode}');
     }
   }
 
@@ -84,7 +108,7 @@ class AppController extends GetxController {
       Map<String, dynamic> data = jsonDecode(response.body);
       print(data);
       loginModel = RegisterModel.fromJson(data);
-        Get.snackbar(' Login Success', 'You have logined successfully');
+      Get.snackbar(' Login Success', 'You have logined successfully');
       update();
     } else if (response.statusCode == 422) {
       Map<String, dynamic> failureData = jsonDecode(response.body);

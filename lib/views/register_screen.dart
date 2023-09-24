@@ -1,9 +1,10 @@
-
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khdne/constants.dart';
 import 'package:khdne/controller/app_controller.dart';
+import 'package:khdne/controller/init_controller.dart';
 import 'package:khdne/models/color_manager.dart';
 import 'package:khdne/models/images_manager.dart';
 import 'package:khdne/views/componants/custom_button.dart';
@@ -24,11 +25,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController confirmPasswordController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
- 
+
   @override
   Widget build(BuildContext context) {
-    AppController controller = Get.put(AppController());
-
+    File? userImage = controller.image;
     return Scaffold(
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -85,6 +85,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             autovalidateMode: autovalidateMode,
                             child: Column(
                               children: [
+                                GetBuilder<AppController>(builder: (_) {
+                                  return Stack(
+                                    children: [
+                                      userImage == null
+                                          ? CircleAvatar(
+                                              radius: 61,
+                                              backgroundColor: Colors.white,
+                                              child: Image.asset(
+                                                ImagesManager.user,
+                                                height: 80,
+                                                width: 80,
+                                              ))
+                                          : CircleAvatar(
+                                              radius: 61,
+                                              backgroundColor: Colors.white,
+                                              backgroundImage: FileImage(
+                                                userImage!,
+                                              )as ImageProvider ),
+                                      Positioned(
+                                        right: 0,
+                                        bottom: 0,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.edit,
+                                            color: Colors.grey[700],
+                                          ),
+                                          onPressed: () async {
+                                            userImage =
+                                                await controller.getImage();
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                }),
+                                const SizedBox(
+                                  height: 20,
+                                ),
                                 CustomTextFormFiels(
                                   label: 'الاسم',
                                   icon: Icons.person,
@@ -99,7 +137,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     label: 'رقم الهاتف',
                                     icon: Icons.call,
                                     controller: phoneController,
-                                    type: TextInputType.phone),
+                                    type: TextInputType.phone,
+                                  
+                                    
+                                    ),
                                 const SizedBox(
                                   height: 20,
                                 ),
@@ -166,16 +207,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             text: 'إنشاء الحساب',
                             onTap: () async {
                               if (formKey.currentState!.validate()) {
-                               
+                                if (userImage != null) {
                                   controller.registerUser(
                                       fullName: nameController.text,
                                       phoneNumber: phoneController.text,
                                       password: passwordController.text,
                                       passwordConfirmation:
                                           confirmPasswordController.text,
-                                  
-                                      endPoint: kRegisterUrl);
-                               
+                                      endPoint: kRegisterUrl,
+                                      image: userImage!);
+                                } else {
+                                  Get.snackbar('Failed', 'Image is required');
+                                }
                               } else {
                                 autovalidateMode = AutovalidateMode.always;
                                 setState(() {});

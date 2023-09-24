@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:khdne/constants.dart';
 import 'package:khdne/models/color_manager.dart';
 
@@ -12,7 +11,7 @@ class CustomTextFormFiels extends StatelessWidget {
       required this.type,
       this.suffix,
       this.validator,
-      this.obscureText});
+      this.obscureText, });
   final String label;
   final IconData icon;
   final TextEditingController controller;
@@ -20,17 +19,16 @@ class CustomTextFormFiels extends StatelessWidget {
   final Widget? suffix;
   final String? Function(String?)? validator;
   final bool? obscureText;
-
-
+ 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       keyboardType: type,
       obscureText: obscureText ?? false,
       textDirection: TextDirection.ltr,
-     
       textAlign: TextAlign.end,
       controller: controller,
+    
       validator: validator ??
           (value) {
             if (value?.isEmpty ?? true) {

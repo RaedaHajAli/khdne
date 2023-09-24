@@ -4,21 +4,22 @@ class RegisterModel {
   final String? phone;
   final int? id;
   final String? token;
-  final String? message;
+
   RegisterModel({
     this.userName,
     this.phone,
     this.id,
     this.token,
-    this.message,
+
   });
   factory RegisterModel.fromJson(Map<String, dynamic> json) {
     return RegisterModel(
-        userName: json['data']['fullname'],
-        phone: json['data']['phone_number'],
-        id: json['data']['id'],
+        userName: json['data']['user']['fullname'],
+        phone: json['data']['user']['phone_number'],
+        id: json['data']['user']['id'],
         token: json['data']['token'],
-        message: json['message']);
+      
+        );
   }
 }
 
