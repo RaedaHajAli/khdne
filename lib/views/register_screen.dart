@@ -10,6 +10,7 @@ import 'package:khdne/models/images_manager.dart';
 import 'package:khdne/views/componants/custom_button.dart';
 import 'package:khdne/views/componants/custom_text_field.dart';
 import 'package:khdne/views/login_screen.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -25,276 +26,284 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController confirmPasswordController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
-
+ 
   @override
   Widget build(BuildContext context) {
     File? userImage = controller.image;
+    
     return Scaffold(
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: SizedBox(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 70,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    ImagesManager.khdne_logo,
-                    width: 112,
-                    height: 49.11,
-                  ),
-                ],
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: Stack(
+      body: GetBuilder<AppController>(
+        builder: (_) {
+          return ModalProgressHUD(
+            inAsyncCall:controller.registerProcess ,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: SizedBox(
+                child: Column(
                   children: [
-                    Image.asset(
-                      ImagesManager.background,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                    const SizedBox(
+                      height: 70,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          ImagesManager.khdne_logo,
+                          width: 112,
+                          height: 49.11,
+                        ),
+                      ],
+                    ),
+                    Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Stack(
                         children: [
-                          const SizedBox(
-                            height: 80,
+                          Image.asset(
+                            ImagesManager.background,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
                           ),
-                          const Row(
-                            children: [
-                              Text(
-                                'إنشاء حساب',
-                                style: TextStyle(
-                                    color: ColorManager.blue,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: kSomarFont),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 25,
-                          ),
-                          Form(
-                            key: formKey,
-                            autovalidateMode: autovalidateMode,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                GetBuilder<AppController>(builder: (_) {
-                                  return Stack(
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                const Row(
+                                  children: [
+                                    Text(
+                                      'إنشاء حساب',
+                                      style: TextStyle(
+                                          color: ColorManager.blue,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: kSomarFont),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Form(
+                                  key: formKey,
+                                  autovalidateMode: autovalidateMode,
+                                  child: Column(
                                     children: [
-                                      userImage == null
-                                          ? CircleAvatar(
-                                              radius: 61,
-                                              backgroundColor: Colors.white,
-                                              child: Image.asset(
-                                                ImagesManager.user,
-                                                height: 80,
-                                                width: 80,
-                                              ))
-                                          : CircleAvatar(
-                                              radius: 61,
-                                              backgroundColor: Colors.white,
-                                              backgroundImage: FileImage(
-                                                userImage!,
-                                              )as ImageProvider ),
-                                      Positioned(
-                                        right: 0,
-                                        bottom: 0,
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.edit,
-                                            color: Colors.grey[700],
+                                      GetBuilder<AppController>(builder: (_) {
+                                        return Stack(
+                                          children: [
+                                            userImage == null
+                                                ? CircleAvatar(
+                                                    radius: 61,
+                                                    backgroundColor: Colors.white,
+                                                    child: Image.asset(
+                                                      ImagesManager.user,
+                                                      height: 80,
+                                                      width: 80,
+                                                    ))
+                                                : CircleAvatar(
+                                                    radius: 61,
+                                                    backgroundColor: Colors.white,
+                                                    backgroundImage: FileImage(
+                                                      userImage!,
+                                                    )as ImageProvider ),
+                                            Positioned(
+                                              right: 0,
+                                              bottom: 0,
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.edit,
+                                                  color: Colors.grey[700],
+                                                ),
+                                                onPressed: () async {
+                                                  userImage =
+                                                      await controller.getImage();
+                                                },
+                                              ),
+                                            )
+                                          ],
+                                        );
+                                      }),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      CustomTextFormFiels(
+                                        label: 'الاسم',
+                                        icon: Icons.person,
+                                        controller: nameController,
+                                        type: TextInputType.name,
+                                        
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      CustomTextFormFiels(
+                                          label: 'رقم الهاتف',
+                                          icon: Icons.call,
+                                          controller: phoneController,
+                                          type: TextInputType.phone,
+                                        
+                                          
                                           ),
-                                          onPressed: () async {
-                                            userImage =
-                                                await controller.getImage();
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      GetBuilder<AppController>(builder: (_) {
+                                        return CustomTextFormFiels(
+                                          label: 'كلمة السر',
+                                          icon: Icons.lock,
+                                          obscureText:
+                                              controller.passwordRegisterVisibility,
+                                          controller: passwordController,
+                                          type: TextInputType.visiblePassword,
+                                          suffix: IconButton(
+                                            icon: Icon(
+                                                controller.passwordRegisterVisibility
+                                                    ? Icons.visibility_off
+                                                    : Icons.visibility),
+                                            onPressed: () {
+                                              controller
+                                                  .changePasswordRegisterVisibility();
+                                            },
+                                          ),
+                                        );
+                                      }),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      GetBuilder<AppController>(builder: (_) {
+                                        return CustomTextFormFiels(
+                                          label: 'تأكيد كلمة السر',
+                                          icon: Icons.lock,
+                                          obscureText:
+                                              controller.confirmPasswordVisibility,
+                                          controller: confirmPasswordController,
+                                          type: TextInputType.visiblePassword,
+                                          suffix: IconButton(
+                                            icon: Icon(
+                                                controller.confirmPasswordVisibility
+                                                    ? Icons.visibility_off
+                                                    : Icons.visibility),
+                                            onPressed: () {
+                                              controller.changeconfirmPVisibility();
+                                            },
+                                          ),
+                                          validator: (value) {
+                                            if (value?.isEmpty ?? true) {
+                                              return 'Field is required';
+                                            } else if (confirmPasswordController
+                                                    .text !=
+                                                passwordController.text) {
+                                              return 'No match';
+                                            } else {
+                                              return null;
+                                            }
                                           },
-                                        ),
-                                      )
+                                        );
+                                      }),
                                     ],
-                                  );
-                                }),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                CustomTextFormFiels(
-                                  label: 'الاسم',
-                                  icon: Icons.person,
-                                  controller: nameController,
-                                  type: TextInputType.name,
-                                  
+                                  ),
                                 ),
                                 const SizedBox(
-                                  height: 20,
+                                  height: 40,
                                 ),
-                                CustomTextFormFiels(
-                                    label: 'رقم الهاتف',
-                                    icon: Icons.call,
-                                    controller: phoneController,
-                                    type: TextInputType.phone,
-                                  
-                                    
-                                    ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                GetBuilder<AppController>(builder: (_) {
-                                  return CustomTextFormFiels(
-                                    label: 'كلمة السر',
-                                    icon: Icons.lock,
-                                    obscureText:
-                                        controller.passwordRegisterVisibility,
-                                    controller: passwordController,
-                                    type: TextInputType.visiblePassword,
-                                    suffix: IconButton(
-                                      icon: Icon(
-                                          controller.passwordRegisterVisibility
-                                              ? Icons.visibility_off
-                                              : Icons.visibility),
-                                      onPressed: () {
-                                        controller
-                                            .changePasswordRegisterVisibility();
-                                      },
-                                    ),
-                                  );
-                                }),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                GetBuilder<AppController>(builder: (_) {
-                                  return CustomTextFormFiels(
-                                    label: 'تأكيد كلمة السر',
-                                    icon: Icons.lock,
-                                    obscureText:
-                                        controller.confirmPasswordVisibility,
-                                    controller: confirmPasswordController,
-                                    type: TextInputType.visiblePassword,
-                                    suffix: IconButton(
-                                      icon: Icon(
-                                          controller.confirmPasswordVisibility
-                                              ? Icons.visibility_off
-                                              : Icons.visibility),
-                                      onPressed: () {
-                                        controller.changeconfirmPVisibility();
-                                      },
-                                    ),
-                                    validator: (value) {
-                                      if (value?.isEmpty ?? true) {
-                                        return 'Field is required';
-                                      } else if (confirmPasswordController
-                                              .text !=
-                                          passwordController.text) {
-                                        return 'No match';
+                                CustomButton(
+                                  text: 'إنشاء الحساب',
+                                  onTap: () async {
+                                    if (formKey.currentState!.validate()) {
+                                      if (userImage != null) {
+                                        controller.registerUser(
+                                            fullName: nameController.text,
+                                            phoneNumber: phoneController.text,
+                                            password: passwordController.text,
+                                            passwordConfirmation:
+                                                confirmPasswordController.text,
+                                            endPoint: kRegisterUrl,
+                                            image: userImage!);
                                       } else {
-                                        return null;
+                                        Get.snackbar('Failed', 'Image is required');
                                       }
-                                    },
-                                  );
-                                }),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          CustomButton(
-                            text: 'إنشاء الحساب',
-                            onTap: () async {
-                              if (formKey.currentState!.validate()) {
-                                if (userImage != null) {
-                                  controller.registerUser(
-                                      fullName: nameController.text,
-                                      phoneNumber: phoneController.text,
-                                      password: passwordController.text,
-                                      passwordConfirmation:
-                                          confirmPasswordController.text,
-                                      endPoint: kRegisterUrl,
-                                      image: userImage!);
-                                } else {
-                                  Get.snackbar('Failed', 'Image is required');
-                                }
-                              } else {
-                                autovalidateMode = AutovalidateMode.always;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                          const SizedBox(
-                            height: 35,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'لديك حساب؟',
-                                style: TextStyle(
-                                    color: ColorManager.blue,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: kSomarFont),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Get.to(() => LoginScreen());
-                                },
-                                child: const Text(
-                                  'تسجيل الدخول',
-                                  style: TextStyle(
-                                      color: ColorManager.orange,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: kSomarFont),
+                                    } else {
+                                      autovalidateMode = AutovalidateMode.always;
+                                      setState(() {});
+                                    }
+                                  },
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          TextButton(
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              alignment: Alignment.center,
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: const TextSpan(
-                                    text: 'متابعتك تعني موافقتك على',
-                                    style: TextStyle(
-                                        color: ColorManager.blue,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: kSomarFont),
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            ' الشروط والأحكام وسياسة الخصوصية',
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      'لديك حساب؟',
+                                      style: TextStyle(
+                                          color: ColorManager.blue,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: kSomarFont),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Get.to(() => LoginScreen());
+                                      },
+                                      child: const Text(
+                                        'تسجيل الدخول',
                                         style: TextStyle(
                                             color: ColorManager.orange,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
                                             fontFamily: kSomarFont),
-                                      )
-                                    ]),
-                              ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                TextButton(
+                                  child: Container(
+                                    padding:
+                                        const EdgeInsets.symmetric(horizontal: 20),
+                                    alignment: Alignment.center,
+                                    child: RichText(
+                                      textAlign: TextAlign.center,
+                                      text: const TextSpan(
+                                          text: 'متابعتك تعني موافقتك على',
+                                          style: TextStyle(
+                                              color: ColorManager.blue,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: kSomarFont),
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  ' الشروط والأحكام وسياسة الخصوصية',
+                                              style: TextStyle(
+                                                  color: ColorManager.orange,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontFamily: kSomarFont),
+                                            )
+                                          ]),
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                )
+                              ],
                             ),
-                            onPressed: () {},
                           )
                         ],
                       ),
                     )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
+              ),
+            ),
+          );
+        }
       ),
     );
   }

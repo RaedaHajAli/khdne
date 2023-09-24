@@ -45,6 +45,7 @@ class AppController extends GetxController {
   RegisterModel? registerModel;
 
   final String baseUrl = 'http://taskflutter.futurecode-projects.com/api/';
+  bool registerProcess = false;
   registerUser({
     required String endPoint,
     required String fullName,
@@ -53,6 +54,8 @@ class AppController extends GetxController {
     required String passwordConfirmation,
     required File image,
   }) async {
+    registerProcess = true;
+    update();
     var headers = {'Accept': 'application/json'};
     var request =
         http.MultipartRequest('POST', Uri.parse('$baseUrl$kRegisterUrl'));
@@ -73,17 +76,22 @@ class AppController extends GetxController {
 
       registerModel = RegisterModel.fromJson(data);
       print(registerModel?.userName ?? 'Not found');
+      // update();
+      registerProcess = false;
       update();
       Get.snackbar(' Register Success', 'You have registered successfully');
     } else if (streamedResponse.statusCode == 422) {
       var response = await http.Response.fromStream(streamedResponse);
       Map<String, dynamic> failureData = jsonDecode(response.body);
-     
 
       failure = RegisterFailure.fromJson(failureData);
+      registerProcess = false;
+      update();
       Get.snackbar('Failed', '${failure!.message}');
     } else {
       print(streamedResponse.reasonPhrase);
+      registerProcess = false;
+      update();
       Get.snackbar(
           'Failed', 'error with satus code: ${streamedResponse.statusCode}');
     }
@@ -91,11 +99,14 @@ class AppController extends GetxController {
 
   RegisterModel? loginModel;
   RegisterFailure? failure;
+  bool loginProcess = false;
   loginUser({
     required String endPoint,
     required String phoneNumber,
     required String password,
   }) async {
+    loginProcess = true;
+    update();
     Uri url = Uri.parse('$baseUrl$endPoint');
     http.Response response = await http.post(url, headers: {
       'Connection': 'keep-alive',
@@ -108,11 +119,15 @@ class AppController extends GetxController {
       Map<String, dynamic> data = jsonDecode(response.body);
       print(data);
       loginModel = RegisterModel.fromJson(data);
+       loginProcess = false;
+    update();
       Get.snackbar(' Login Success', 'You have logined successfully');
-      update();
+    
     } else if (response.statusCode == 422) {
       Map<String, dynamic> failureData = jsonDecode(response.body);
       failure = RegisterFailure.fromJson(failureData);
+       loginProcess = false;
+    update();
       Get.snackbar('Failed', '${failure!.message}');
     } else {
       print('error with satus code: ${response.statusCode}');
