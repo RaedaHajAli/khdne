@@ -8,7 +8,7 @@ import 'package:khdne/constants.dart';
 
 import 'package:khdne/models/register_model.dart';
 import 'package:khdne/models/vehicle_model.dart';
-import 'package:khdne/views/add_vehicle.dart';
+import 'package:khdne/views/add_vehicle/add_vehicle.dart';
 
 import 'package:khdne/views/login_screen.dart';
 
@@ -140,38 +140,23 @@ class AppController extends GetxController {
 
   Map<String, File> imagesMap = {};
 
-  addMechanicImage({required File image}) {
-    imagesMap.addAll({'mechanicImage': image});
+  addImage({required File image}) {
+    imagesMap.addAll({'$image': image});
 
     update();
   }
 
-  addVehicleImage({required File image}) {
-    imagesMap.addAll({'vehicleImage': image});
+  removeImage({required File image}) {
+    imagesMap.remove('$image');
 
     update();
   }
 
-  addBoardImage({required File image}) {
-    imagesMap.addAll({'boardImage': image});
-
-    update();
-  }
-
-  addIdImage({required File image}) {
-    imagesMap.addAll({'idImage': image});
-
-    update();
-  }
-
-  addDelegateImage({required File image}) {
-    imagesMap.addAll({'delegateImage': image});
-
-    update();
-  }
-
+  bool addVehiclePross = false;
   VehicleModel? vehicleModel;
   addNewVehicle({required VehicleModel model, required String token}) async {
+    addVehiclePross = true;
+    update();
     var headers = {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
@@ -200,10 +185,16 @@ class AppController extends GetxController {
 
     if (response.statusCode == 200) {
       print(await response.stream.bytesToString());
+      addVehiclePross = false;
+      update();
       print('********* add successfully');
+      Get.snackbar('Success', 'Your vehicle has been added successfly');
     } else {
       print(response.reasonPhrase);
       print('*********Failed  adding ');
+       addVehiclePross = false;
+      update();
+      Get.snackbar('Failed', 'There is an error when adding your vehicle');
     }
   }
 }

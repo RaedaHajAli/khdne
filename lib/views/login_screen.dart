@@ -6,8 +6,8 @@ import 'package:khdne/controller/app_controller.dart';
 import 'package:khdne/controller/init_controller.dart';
 import 'package:khdne/models/color_manager.dart';
 import 'package:khdne/models/images_manager.dart';
-import 'package:khdne/views/componants/custom_button.dart';
-import 'package:khdne/views/componants/custom_text_field.dart';
+import 'package:khdne/views/components/custom_button.dart';
+import 'package:khdne/views/components/custom_text_field.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginScreen extends StatefulWidget {

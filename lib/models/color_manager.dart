@@ -6,4 +6,5 @@ class ColorManager {
   static const grey = Color(0xffDADADA);
   static const greyBold = Color(0xff747474);
   static const white = Colors.white;
+  static const black = Colors.black;
 }
