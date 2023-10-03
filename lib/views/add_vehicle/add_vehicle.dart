@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:khdne/constants.dart';
 import 'package:khdne/models/color_manager.dart';
-import 'package:khdne/views/add_vehicle/components/app_bar.dart';
-import 'package:khdne/views/add_vehicle/components/build_add_vehicle_body.dart';
+import 'package:khdne/views/add_vehicle/components/build_app_bar.dart';
+import 'package:khdne/views/add_vehicle/components/add_vehicle_body.dart';
 
 class AddVehicle extends StatefulWidget {
   const AddVehicle({super.key});
@@ -17,7 +16,7 @@ class _AddVehicleState extends State<AddVehicle> {
     return Scaffold(
       backgroundColor: ColorManager.white,
       appBar: buildAppBar(),
-      body: AddVehicleBody(),
+      body: const AddVehicleBody(),
     );
   }
 
